@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".AskForHelp"></activity>
+        <activity android:name=".AskForHelp"
+            android:parentActivityName=".MainActivity"></activity>
     </application>
 
 </manifest>

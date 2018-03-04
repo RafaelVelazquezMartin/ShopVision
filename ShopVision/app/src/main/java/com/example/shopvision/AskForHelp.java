@@ -3,6 +3,7 @@ package com.example.shopvision;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,6 +26,8 @@ public class AskForHelp extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ask_activity);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         editText = findViewById(R.id.editText);
         toSpeech = new TextToSpeech(AskForHelp.this, new TextToSpeech.OnInitListener() {
@@ -38,6 +41,16 @@ public class AskForHelp extends AppCompatActivity{
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+        if (id == android.R.id.home){
+            this.finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void TTS(View view){
