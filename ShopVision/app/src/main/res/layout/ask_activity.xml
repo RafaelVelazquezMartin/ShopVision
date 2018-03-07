@@ -7,10 +7,10 @@
 
     <TextView
         android:id="@+id/textView"
-        android:layout_width="295dp"
-        android:layout_height="74dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="8dp"
         android:lineSpacingExtra="8sp"
         android:text="@string/press_button_below_to_ask_for_help"
         android:textAlignment="center"
@@ -20,7 +20,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.39999998" />
 
     <ImageButton
         android:id="@+id/speakbutton"
@@ -29,8 +29,8 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="224dp"
         android:background="#0000"
-        android:onClick="TTS"
         android:contentDescription="@string/click_to_play_sound"
+        android:onClick="TTS"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
