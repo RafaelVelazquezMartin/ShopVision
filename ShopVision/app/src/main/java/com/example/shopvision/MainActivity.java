@@ -9,6 +9,7 @@ import android.widget.Button;
 public class MainActivity extends AppCompatActivity {
 
     private Button mNextButton;
+    private Button mListButton;
 
 
     @Override
@@ -24,10 +25,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mListButton = findViewById(R.id.button_list);
+        mListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openListActivity();
+            }
+        });
+
     }
 
     public void openAskActivity(){
         Intent intent = new Intent(this, AskForHelp.class);
+        startActivity(intent);
+    }
+
+    public void openListActivity(){
+        Intent intent = new Intent(this, ShoppingList.class);
         startActivity(intent);
     }
 
