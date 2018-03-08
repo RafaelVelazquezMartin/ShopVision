@@ -10,6 +10,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Button mNextButton;
     private Button mListButton;
+    private Button mCloudVisionButton;
 
 
     @Override
@@ -33,6 +34,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mCloudVisionButton = findViewById(R.id.google_translate_button);
+        mCloudVisionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {openGoogleTranslateActivity();
+            }
+        });
+
+    }
+
+    public void openGoogleTranslateActivity(){
+        Intent intent = new Intent(this, GoogleTranslate.class);
+        startActivity(intent);
     }
 
     public void openAskActivity(){
