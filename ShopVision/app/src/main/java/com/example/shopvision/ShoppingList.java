@@ -71,7 +71,6 @@ public class ShoppingList extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-
         if (id == R.id.action_add){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Add Item");
