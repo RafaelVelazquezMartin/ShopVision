@@ -7,15 +7,15 @@
 
     <Button
         android:id="@+id/basic_button"
-        android:layout_width="88dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/btn_bg"
         android:text="@string/ask"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/google_translate_button"
         app:layout_constraintVertical_bias="0.106" />
 

@@ -29,8 +29,9 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="12dp"
-                android:text="Use the floating action button to select an image.                       Make sure you only include the product name on the picture."
-                android:textSize="11sp"
+                android:text="Select the language you wish to translate into and then use the image bubble button to select an image. Make sure you only include the product name on the picture."
+                android:textAlignment="center"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toTopOf="@+id/uploadedImage"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -78,8 +79,8 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="10dp"
-                android:text="What are you looking for?"
-                android:textSize="20sp" />
+                android:textSize="22sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </ScrollView>
 

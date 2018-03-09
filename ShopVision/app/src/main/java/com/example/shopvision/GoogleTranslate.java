@@ -332,6 +332,7 @@ public class GoogleTranslate extends AppCompatActivity {
                                     JSONObject finalObject = detection.getJSONObject(0);
                                     String mostLikelyLanguage = finalObject.getString("language");
                                     detectedLanguage = mostLikelyLanguage;
+                                    Log.d("DETECTED_LANG", detectedLanguage);
                                     Toast.makeText(getApplicationContext(), "Detected Language: " + detectedLanguage, Toast.LENGTH_LONG).show();
 
                                 } catch (JSONException e) {
@@ -363,7 +364,7 @@ public class GoogleTranslate extends AppCompatActivity {
                                                 JSONObject finalObject = translations.getJSONObject(0);
                                                 String translatedText = finalObject.getString("translatedText");
 
-                                                mImageDetails.setText("You are looking for:\n" + translatedText);
+                                                mImageDetails.setText("You are looking at:\n" + translatedText);
 
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
