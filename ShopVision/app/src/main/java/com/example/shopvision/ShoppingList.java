@@ -96,6 +96,7 @@ public class ShoppingList extends AppCompatActivity {
         }
         if (id == R.id.action_settings){
             shoppingList.clear();
+            storeArrayVal(shoppingList,getApplicationContext());
             lv.setAdapter(adapter);
         }
         return super.onOptionsItemSelected(item);
