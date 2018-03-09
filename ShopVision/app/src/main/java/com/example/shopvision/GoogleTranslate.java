@@ -78,8 +78,8 @@ public class GoogleTranslate extends AppCompatActivity {
     private ArrayAdapter<String> aaLangSelect;
     public static List<String> langOptionsList = new ArrayList<>();
     String[] langOptions;
-    String languageSelected;
-
+    private String languageSelected;
+    private String detectedLanguage;
 
 
     public GoogleTranslate() throws MalformedURLException {
@@ -103,7 +103,6 @@ public class GoogleTranslate extends AppCompatActivity {
         sLangSelect = (Spinner) findViewById(R.id.languageSpinner);
 
         langOptions = new String[langOptionsList.size()];
-        Log.d("LIST", langOptionsList.toString());
         langOptions = langOptionsList.toArray(langOptions);
         aaLangSelect = new ArrayAdapter(this, android.R.layout.simple_list_item_1, langOptions);
         aaLangSelect.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
@@ -318,10 +317,40 @@ public class GoogleTranslate extends AppCompatActivity {
 
                 mProcessDescription.setText("Image uploaded successfully!");
                 Log.d("RESULT", result);
+                AndroidNetworking.get(GOOGLE_TRANSLATE_URL + "/detect?key={api_key}&q={text}")
+                        .addPathParameter("text", result)
+                        .addPathParameter("api_key", CLOUD_VISION_API_KEY)
+                        .setPriority(Priority.HIGH)
+                        .build()
+                        .getAsJSONObject(new JSONObjectRequestListener() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    JSONObject data = response.getJSONObject("data");
+                                    JSONArray detections = data.getJSONArray("detections");
+                                    JSONArray detection = detections.getJSONArray(0);
+                                    JSONObject finalObject = detection.getJSONObject(0);
+                                    String mostLikelyLanguage = finalObject.getString("language");
+                                    detectedLanguage = mostLikelyLanguage;
+                                    Toast.makeText(getApplicationContext(), "Detected Language: " + detectedLanguage, Toast.LENGTH_LONG).show();
 
-                AndroidNetworking.get(GOOGLE_TRANSLATE_URL + "?key={api_key}&source=en&target={lang}&q={text}")
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onError(ANError anError) {
+                                Log.e("DETECT_BODY", anError.getErrorBody());
+                                Log.e("DETECT_DETAIL", anError.getErrorDetail());
+                                mImageDetails.setText("Detect failed!");
+                            }
+                        });
+
+                AndroidNetworking.get(GOOGLE_TRANSLATE_URL + "?key={api_key}&source=en&target={to}&q={text}")
                                     .addPathParameter("api_key", CLOUD_VISION_API_KEY)
-                                    .addPathParameter("lang", languageSelected)
+                                    .addPathParameter("from", detectedLanguage)
+                                    .addPathParameter("to", languageSelected)
                                     .addPathParameter("text", result)
                                     .setPriority(Priority.HIGH)
                                     .build()
@@ -343,7 +372,9 @@ public class GoogleTranslate extends AppCompatActivity {
 
                                         @Override
                                         public void onError(ANError anError) {
-                                            mImageDetails.setText("Couldn't translate!");
+                                            Log.e("TRANSLATE_BODY", anError.getErrorBody());
+                                            Log.e("TRANSLATE_DETAIL", anError.getErrorDetail());
+                                            mImageDetails.setText("Translate failed!");
                                         }
                                     });
                 ;}

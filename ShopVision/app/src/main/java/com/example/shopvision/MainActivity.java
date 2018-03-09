@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
                                         String availableLanguage = finalObject.getString("language");
                                         String verboseLanguage = finalObject.getString("name");
                                         String completeLanguage = verboseLanguage + " - " + availableLanguage;
-                                        Log.d("LANG", completeLanguage);
                                         GoogleTranslate.langOptionsList.add(completeLanguage);
 
                                     }
