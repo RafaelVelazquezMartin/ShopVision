@@ -17,10 +17,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONArrayRequestListener;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
@@ -32,16 +40,21 @@ import com.google.api.services.vision.v1.VisionRequestInitializer;
 import com.google.api.services.vision.v1.model.AnnotateImageRequest;
 import com.google.api.services.vision.v1.model.BatchAnnotateImagesRequest;
 import com.google.api.services.vision.v1.model.BatchAnnotateImagesResponse;
-import com.google.api.services.vision.v1.model.EntityAnnotation;
 import com.google.api.services.vision.v1.model.Feature;
 import com.google.api.services.vision.v1.model.Image;
 import com.google.api.services.vision.v1.model.TextAnnotation;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
-
+import java.util.List;
 
 
 public class GoogleTranslate extends AppCompatActivity {
@@ -56,9 +69,21 @@ public class GoogleTranslate extends AppCompatActivity {
     public static final int CAMERA_PERMISSIONS_REQUEST = 2;
     public static final int CAMERA_IMAGE_REQUEST = 3;
 
+    private final String GOOGLE_TRANSLATE_URL = "https://www.googleapis.com/language/translate/v2";
+
     private TextView mProcessDescription;
     private TextView mImageDetails;
     private ImageView mMainImage;
+    private Spinner sLangSelect;
+    private ArrayAdapter<String> aaLangSelect;
+    public static List<String> langOptionsList = new ArrayList<>();
+    String[] langOptions;
+    String languageSelected;
+
+
+
+    public GoogleTranslate() throws MalformedURLException {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +93,35 @@ public class GoogleTranslate extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        AndroidNetworking.initialize(getApplicationContext());
+
+
+
+        mProcessDescription = (TextView) findViewById(R.id.process_description);
+        mImageDetails = (TextView) findViewById(R.id.image_details);
+        mMainImage = (ImageView) findViewById(R.id.uploadedImage);
+        sLangSelect = (Spinner) findViewById(R.id.languageSpinner);
+
+        langOptions = new String[langOptionsList.size()];
+        Log.d("LIST", langOptionsList.toString());
+        langOptions = langOptionsList.toArray(langOptions);
+        aaLangSelect = new ArrayAdapter(this, android.R.layout.simple_list_item_1, langOptions);
+        aaLangSelect.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
+        sLangSelect.setAdapter(aaLangSelect);
+        sLangSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                switch (adapterView.getId()) {
+                    case R.id.languageSpinner:
+                        languageSelected = sLangSelect.getSelectedItem().toString().split(" - ")[1];
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -92,9 +146,6 @@ public class GoogleTranslate extends AppCompatActivity {
             }
         });
 
-        mProcessDescription = (TextView) findViewById(R.id.process_description);
-        mImageDetails = (TextView) findViewById(R.id.image_details);
-        mMainImage = (ImageView) findViewById(R.id.uploadedImage);
     }
 
     public void startGalleryChooser() {
@@ -264,8 +315,38 @@ public class GoogleTranslate extends AppCompatActivity {
             }
 
             protected void onPostExecute(String result) {
-                mImageDetails.setText(result);
-            }
+
+                mProcessDescription.setText("Image uploaded successfully!");
+                Log.d("RESULT", result);
+
+                AndroidNetworking.get(GOOGLE_TRANSLATE_URL + "?key={api_key}&source=en&target={lang}&q={text}")
+                                    .addPathParameter("api_key", CLOUD_VISION_API_KEY)
+                                    .addPathParameter("lang", languageSelected)
+                                    .addPathParameter("text", result)
+                                    .setPriority(Priority.HIGH)
+                                    .build()
+                                    .getAsJSONObject(new JSONObjectRequestListener() {
+                                        @Override
+                                        public void onResponse(JSONObject response) {
+                                            try {
+                                                JSONObject data = response.getJSONObject("data");
+                                                JSONArray translations = data.getJSONArray("translations");
+                                                JSONObject finalObject = translations.getJSONObject(0);
+                                                String translatedText = finalObject.getString("translatedText");
+
+                                                mImageDetails.setText("You are looking for:\n" + translatedText);
+
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(ANError anError) {
+                                            mImageDetails.setText("Couldn't translate!");
+                                        }
+                                    });
+                ;}
         }.execute();
     }
 
@@ -290,7 +371,7 @@ public class GoogleTranslate extends AppCompatActivity {
     }
 
     private String convertResponseToString(BatchAnnotateImagesResponse response) {
-        String message = "You are looking for:\n";
+        String message = "";
 
         final TextAnnotation text = response.getResponses().get(0).getFullTextAnnotation();
         if (text != null) {
